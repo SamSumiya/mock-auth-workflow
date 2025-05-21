@@ -12,5 +12,3 @@ export async function fakeLogin() {
         console.log(`${e}`)
     }
 }
-
-fakeLogin() 
