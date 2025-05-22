@@ -1,21 +1,16 @@
-import { createId } from '../utils/helpers';
-
-import { fakeSessionStore } from '../utils/fakeSessionStore';
-
 import { createFakeSession, fakeFetchSession } from '../repositories/sessionRepository';
-import { User } from '../types/user';
+
 
 // Fake Login a user
-export async function getOrCreateSession( email: string ): Promise<string|null> {
+export async function getOrCreateSession( userId: string ): Promise<string|null> {
 
     try {
-       const sessionId = await fakeFetchSession(email)
-       console.log(sessionId, 'sessionId from getOrCreateSession')
+       const sessionId = await fakeFetchSession(userId)
+
        if ( sessionId ) {
             return sessionId
        } else {
-            console.log('createFakeSession(email)')
-            return createFakeSession(email)
+            return createFakeSession(userId)
        }
     } catch(err) {
         const error = err as Error

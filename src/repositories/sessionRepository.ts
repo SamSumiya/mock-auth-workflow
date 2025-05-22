@@ -1,16 +1,17 @@
 import fs from 'fs/promises'  
-import { SESSION_FILE } from '../utils/fakeSessionStore'
+// import { SESSION_FILE } from '../utils/fakeSessionStore'
 // import { Session } from "../types/session"
 import { fakeSessionStore } from '../utils/fakeSessionStore'
 import { createId } from "../utils/helpers"
 import { User } from "../types/user"
 import { fakeUsers } from '../data/fakeUserStore'
+import { sessionFilePath } from '../utils/fakeSessionStore'
 
-export async function fakeFetchSession(email: string): Promise<string|null> {
-    return new Promise<string|null>((resolve, reject) => {
+export async function fakeFetchSession(userId: string): Promise<string|null> {
+    return new Promise<string|null>((resolve) => {
         setTimeout(() => {
             const existingSession = Object.entries(fakeSessionStore).find(
-                    ([__, session]) => session.email === email) 
+                    ([id, _]) => userId === id) 
                     if (existingSession) {
                         return resolve(existingSession[0])
                     } else {
@@ -20,17 +21,16 @@ export async function fakeFetchSession(email: string): Promise<string|null> {
     })
 }
 
-export async function createFakeSession(email: string):Promise<string|null> {
+export async function createFakeSession(userId: string):Promise<string|null> {
     const sessionId = createId()
 
     fakeSessionStore[sessionId] = {
-        id: createId(),
-        email: email, 
+        userId,
         createdAt: Date.now()
     }
     
     try {
-        await fs.writeFile(SESSION_FILE, JSON.stringify(fakeSessionStore, null, 2));
+        await fs.writeFile(sessionFilePath, JSON.stringify(fakeSessionStore, null, 2));
         return sessionId
     } catch (err) {
         console.error("❌ Failed to persist session store:", err);

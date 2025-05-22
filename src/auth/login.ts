@@ -1,6 +1,6 @@
 import { User } from "../types/user";
 
-import { fakeFetchSession } from "../repositories/sessionRepository";
+// import { fakeFetchSession } from "../repositories/sessionRepository";
 import { fakeFetchUserByEmail } from "../repositories/userRepository";
 import { getOrCreateSession } from "./session";
 
