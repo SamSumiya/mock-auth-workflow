@@ -1,9 +1,9 @@
 import fs from 'fs/promises'  
 // import { SESSION_FILE } from '../utils/fakeSessionStore'
 // import { Session } from "../types/session"
-import { fakeSessionStore } from '../utils/fakeSessionStore'
+import { fakeSessionStore } from './fakeSessionStore'
 import { createId } from "../utils/helpers"
-import { sessionFilePath } from '../utils/fakeSessionStore'
+import { sessionFilePath } from './fakeSessionStore'
 
 export async function fakeFetchSession(userId: string): Promise<string|null> {
     return new Promise<string|null>((resolve) => {

@@ -5,7 +5,7 @@ import path from 'path'
 
 // export const SESSION_FILE = "session.json";
 
-export const sessionFilePath = path.join(__dirname, '../data/session.json')
+export const sessionFilePath = path.join(__dirname, '../fixtures/session.json')
 console.log(sessionFilePath, 'sessionFilePath')
 
 

@@ -2,7 +2,6 @@ import { PreRegisterUser, User } from "../types/user";
 import { fakeRegister } from "../auth/register";
 import { getOrCreateSession } from "../auth/session";
 
-
 const user = {
     firstname: 'Sam',
     lastname: 'Sumiya',

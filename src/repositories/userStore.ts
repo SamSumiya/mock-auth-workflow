@@ -11,19 +11,23 @@ import { User, PublicUser } from '../types/user'
 import { hasUser } from '../utils/hasUser'
 
 import { AddUserResult } from '../types/AddUserResult' 
+import { readFromFile } from '../utils/readFromFile'
 
-const USERS_FILE = path.join(__dirname, './users.json')
+const USERS_FILE = path.join(__dirname, '../fixtures/users.json')
 
 export async function readUserFile(): Promise<Record<string, User> | null> {
     try {
-        const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
-        if (!rawData.trim()) {
-            // File exists but is empty or whitespace
-            return {}
-        }
 
-        const parsedData = JSON.parse(rawData) as Record<string, User>
-        return parsedData
+        const parsedFileData = readFromFile<Record<'string', User>>(USERS_FILE)
+        return Object.keys(parsedFileData).length ? parsedFileData : {} 
+        // const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
+        // if (!rawData.trim()) {
+        //     // File exists but is empty or whitespace
+        //     return {}
+        // }
+
+        // const parsedData = JSON.parse(rawData) as Record<string, User>
+        // return parsedData
     } catch(err) {
         if ( err && 
             typeof err === 'object' && 
