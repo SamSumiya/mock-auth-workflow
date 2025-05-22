@@ -5,8 +5,7 @@ import { getOrCreateSession } from "./session";
 export async function fakeLogin() { 
     try {
         const user = await fakeFetchUserByEmail('g_turner@example.com')
-        const sessionId = await getOrCreateSession(user.email)
-        console.log(sessionId, 'sessssionId')
+        return user 
     } catch( err ) {
         const e = err as Error
         console.log(`${e}`)
