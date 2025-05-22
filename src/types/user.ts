@@ -6,3 +6,5 @@ export type User = {
     password: string, 
 }
 
+export type PublicUser = Omit<User, 'password'>
+export type PreRegisterUser = Omit<User, 'id'> 
