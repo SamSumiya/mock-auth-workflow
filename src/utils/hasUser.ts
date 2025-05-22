@@ -1,4 +1,4 @@
-import { readUserFile } from "../userStore"
+import { readUserFile } from "../repositories/userStore"
 
 export async function hasUser(email: string): Promise<boolean> {    
     try {

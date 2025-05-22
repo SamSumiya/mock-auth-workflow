@@ -20,11 +20,10 @@ async function fakeClientRegister(user: PreRegisterUser) {
             const sessionId = await getOrCreateSession(registeredUser.id)
         }
     } catch(err) {
-
+        const error = err instanceof Error ? err : new Error('Failed to register new user')
+        console.error(error)
+        process.exit(1)
     }
-   
-    
-    
 }
 
 fakeClientRegister(user)

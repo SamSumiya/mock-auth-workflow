@@ -3,8 +3,6 @@ import fs from 'fs/promises'
 // import { Session } from "../types/session"
 import { fakeSessionStore } from '../utils/fakeSessionStore'
 import { createId } from "../utils/helpers"
-import { User } from "../types/user"
-import { fakeUsers } from '../data/fakeUserStore'
 import { sessionFilePath } from '../utils/fakeSessionStore'
 
 export async function fakeFetchSession(userId: string): Promise<string|null> {

@@ -8,8 +8,7 @@ import bcrypt from 'bcryptjs'
 // Local 
 import { createId } from '../utils/helpers'
 import { User, PublicUser } from '../types/user'
-import { hasUser } from './utils/hasUser'
-
+import { hasUser } from '../utils/hasUser'
 
 import { AddUserResult } from '../types/AddUserResult' 
 
