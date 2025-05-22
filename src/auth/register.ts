@@ -1,7 +1,6 @@
-import { User } from "../types/user";
+import { User, PublicUser, PreRegisterUser } from "../types/user";
 
-type PublicUser = Omit<User, 'password'>
-type PreRegisterUser = Omit<User, 'id'> 
+
 // type AddUserResult = { id: string } | { id: 'user_already_exists' };
 import { addUser } from "../data/userStore";
 import { AddUserResult } from "../types/AddUserResult";
@@ -13,7 +12,7 @@ export async function fakeRegister(): Promise<PublicUser | AddUserResult | null>
         email: 'sam_sumiya@sample.com',
         password: 'password123' 
     } as PreRegisterUser
-    console.log('fakeRegister')
+
     try {
         const registerUser = await addUser(user)
         return registerUser as PublicUser

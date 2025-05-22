@@ -7,13 +7,11 @@ import bcrypt from 'bcryptjs'
 
 // Local 
 import { createId } from '../utils/helpers'
-import { User } from '../types/user'
+import { User, PublicUser } from '../types/user'
 import { hasUser } from './utils/hasUser'
-type PublicUser = Omit<User, 'password'>
+
 
 import { AddUserResult } from '../types/AddUserResult' 
-
-// type AddUserResult = { id: string } | { id: 'user_already_exists' };
 
 const USERS_FILE = path.join(__dirname, './users.json')
 
@@ -24,7 +22,7 @@ export async function readUserFile(): Promise<Record<string, User> | null> {
             // File exists but is empty or whitespace
             return {}
         }
-        
+
         const parsedData = JSON.parse(rawData) as Record<string, User>
         return parsedData
     } catch(err) {
