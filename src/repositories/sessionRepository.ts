@@ -1,15 +1,25 @@
 import fs from 'fs/promises'  
 // import { SESSION_FILE } from '../utils/fakeSessionStore'
-// import { Session } from "../types/session"
+import { Session } from "../types/session"
 import { fakeSessionStore } from './fakeSessionStore'
 import { createId } from "../utils/helpers"
 import { sessionFilePath } from './fakeSessionStore'
+import { readFromFile } from '../utils/readFromFile'
+import path from 'path'
+type SessionRecord = Record<string, Session>
 
 export async function fakeFetchSession(userId: string): Promise<string|null> {
+    const sessionFilePath = path.join(__dirname, '../fixtures/session.json')
+    const sessionFile = await readFromFile<SessionRecord>(sessionFilePath)
+    console.log(sessionFile, 'this is the sessionFile')
     return new Promise<string|null>((resolve) => {
         setTimeout(() => {
-            const existingSession = Object.entries(fakeSessionStore).find(
-                    ([id, _]) => userId === id) 
+            const existingSession = Object.entries(sessionFile).find(
+                    ([_,session]) => {
+
+                        console.log(session, userId, 'session, userIdsession, userId')
+                        session.userId === userId}
+                    ) 
                     if (existingSession) {
                         return resolve(existingSession[0])
                     } else {
@@ -24,6 +34,7 @@ export async function createFakeSession(userId: string):Promise<string|null> {
 
     fakeSessionStore[sessionId] = {
         userId,
+        sessionId, 
         createdAt: Date.now()
     }
     

@@ -48,11 +48,11 @@ export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddU
     }
 
     const hashedPassword = await bcrypt.hash(password, 10) 
-    const id = createId()
+    const userId = createId()
 
     const {password: _, ...publicProfile} = {
         ...user, 
-        id 
+        userId
     }
 
     const newUser = {
@@ -62,7 +62,7 @@ export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddU
 
     try {
         const file = await readUserFile()
-        const updatedFile = {  ...file, [email]: newUser, } 
+        const updatedFile = {  ...file, [userId]: newUser, } 
         await fs.writeFile(USERS_FILE, JSON.stringify(updatedFile, null, 2 ))
         return publicProfile 
     } catch( err ) {
