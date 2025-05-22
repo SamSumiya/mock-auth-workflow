@@ -1,7 +1,13 @@
 import { User } from "../types/user";
 // import { fakeUsers } from "./fakeUserStore"
 // TODO need to be rewritten 
-export function fakeFetchUserByEmail(email: string) {
+
+
+export async function fakeFetchUserByEmail( ) {
+    
+}
+
+// export function fakeFetchUserByEmail(email: string) {
     // return new Promise<User>((resolve, reject) => {
     //     const response = fakeUsers[email] 
     //     setTimeout(() => {
@@ -12,4 +18,4 @@ export function fakeFetchUserByEmail(email: string) {
     //         }
     //     }, 150 )
     // })
-}
+// }
