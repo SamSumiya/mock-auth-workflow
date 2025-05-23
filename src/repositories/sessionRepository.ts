@@ -29,7 +29,6 @@ export async function fakeFetchSession(userId: string): Promise<string|null> {
 }
 
 export async function createFakeSession(userId: string):Promise<string|null> {
-    console.log(userId,' from createFakeSessioncreateFakeSession')
     const sessionId = createId()
 
     fakeSessionStore[sessionId] = {

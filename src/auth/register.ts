@@ -5,7 +5,6 @@ import { addUser } from "../repositories/userStore";
 import { AddUserResult } from "../types/AddUserResult";
 
 export async function fakeRegister(user: PreRegisterUser): Promise<PublicUser | AddUserResult | null> {
-
     try {
         const registerUser = await addUser(user)
         return registerUser as PublicUser
