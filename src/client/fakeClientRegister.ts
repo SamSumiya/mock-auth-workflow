@@ -16,7 +16,6 @@ async function fakeClientRegister(user: PreRegisterUser) {
             registeredUser && 
             'email' in registeredUser
         ) {
-            console.log(registeredUser)
             const sessionId = await getOrCreateSession(registeredUser.userId)
         }
     } catch(err) {

@@ -1,32 +1,7 @@
 {
-  "ce086666-ee7b-48c5-bc83-137f5df575fd": {
-    "userId": "46372d29-14fe-4ae4-befc-9e0e273ba23c",
-    "sessionId": "ce086666-ee7b-48c5-bc83-137f5df575fd",
-    "createdAt": 1747949208896
-  },
-  "24411655-9e4c-4ef0-a3df-3938dd27f2f4": {
-    "userId": "46372d29-14fe-4ae4-befc-9e0e273ba23c",
-    "sessionId": "24411655-9e4c-4ef0-a3df-3938dd27f2f4",
-    "createdAt": 1747949208897
-  },
-  "97901cfc-6c0a-40e6-b243-e8d3379f598d": {
-    "userId": "2798e1c8-8c0d-49b5-b5b8-e4173532a447",
-    "sessionId": "97901cfc-6c0a-40e6-b243-e8d3379f598d",
-    "createdAt": 1747949211711
-  },
-  "640694d1-5ad3-4d32-8aa7-068a461351e9": {
-    "userId": "2798e1c8-8c0d-49b5-b5b8-e4173532a447",
-    "sessionId": "640694d1-5ad3-4d32-8aa7-068a461351e9",
-    "createdAt": 1747949211711
-  },
-  "caf1c16b-f15c-42e8-b380-fd2adc29547c": {
-    "userId": "ef06d263-0fb7-4d65-a94a-c1385cac0e6c",
-    "sessionId": "caf1c16b-f15c-42e8-b380-fd2adc29547c",
-    "createdAt": 1747949230113
-  },
-  "fd4e245f-ef53-443e-b9d6-20bfe396bf1a": {
-    "userId": "ef06d263-0fb7-4d65-a94a-c1385cac0e6c",
-    "sessionId": "fd4e245f-ef53-443e-b9d6-20bfe396bf1a",
-    "createdAt": 1747949230114
+  "d0c8a7ff-513e-4875-9948-b96eda2be2aa": {
+    "userId": "a08bbb96-b1e2-4d2e-8c6b-219ea70f7382",
+    "sessionId": "d0c8a7ff-513e-4875-9948-b96eda2be2aa",
+    "createdAt": 1747968802571
   }
 }

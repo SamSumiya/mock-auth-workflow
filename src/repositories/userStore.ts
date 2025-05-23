@@ -16,9 +16,10 @@ import { readFromFile } from '../utils/readFromFile'
 const USERS_FILE = path.join(__dirname, '../fixtures/users.json')
 
 export async function readUserFile(): Promise<Record<string, User> | null> {
+    
     try {
-
-        const parsedFileData = readFromFile<Record<'string', User>>(USERS_FILE)
+        const parsedFileData = await readFromFile<Record<'string', User>>(USERS_FILE)
+        console.log(parsedFileData, 'parsedFileDataparsedFileData')
         return Object.keys(parsedFileData).length ? parsedFileData : {} 
         // const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
         // if (!rawData.trim()) {
@@ -35,14 +36,13 @@ export async function readUserFile(): Promise<Record<string, User> | null> {
             ( err as NodeJS.ErrnoException).code === 'ENOENT') {
             return{} 
         }
-         throw err 
+        throw err 
     }
 }
 
 export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddUserResult | null> {
     const { email, password } = user
     const userExists = await hasUser(email)
-
     if ( userExists ) {
         return { id: 'user_already_exists' };
     }
@@ -62,7 +62,7 @@ export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddU
 
     try {
         const file = await readUserFile()
-        const updatedFile = {  ...file, [userId]: newUser, } 
+        const updatedFile = {  ...file, [email]: newUser, } 
         await fs.writeFile(USERS_FILE, JSON.stringify(updatedFile, null, 2 ))
         return publicProfile 
     } catch( err ) {

@@ -10,8 +10,8 @@ export async function getOrCreateSession( userId: string ): Promise<string|null>
         if ( sessionId ) {
             return sessionId
         } else {
-             const sessionId = await createFakeSession(userId)
-            return createFakeSession(userId)
+             return await createFakeSession(userId)
+            // return createFakeSession(userId)
         }
     } catch(err) {
         const error = err as Error

@@ -16,7 +16,6 @@ export async function fakeFetchSession(userId: string): Promise<string|null> {
         setTimeout(() => {
             const existingSession = Object.entries(sessionFile).find(
                     ([_,session]) => {
-
                         console.log(session, userId, 'session, userIdsession, userId')
                         session.userId === userId}
                     ) 
@@ -30,6 +29,7 @@ export async function fakeFetchSession(userId: string): Promise<string|null> {
 }
 
 export async function createFakeSession(userId: string):Promise<string|null> {
+    console.log(userId,' from createFakeSessioncreateFakeSession')
     const sessionId = createId()
 
     fakeSessionStore[sessionId] = {
