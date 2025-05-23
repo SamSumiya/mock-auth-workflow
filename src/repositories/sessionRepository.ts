@@ -11,12 +11,11 @@ type SessionRecord = Record<string, Session>
 export async function fakeFetchSession(userId: string): Promise<string|null> {
     const sessionFilePath = path.join(__dirname, '../fixtures/session.json')
     const sessionFile = await readFromFile<SessionRecord>(sessionFilePath)
-    console.log(sessionFile, 'this is the sessionFile')
+
     return new Promise<string|null>((resolve) => {
         setTimeout(() => {
             const existingSession = Object.entries(sessionFile).find(
                     ([_,session]) => {
-                        console.log(session, userId, 'session, userIdsession, userId')
                         session.userId === userId}
                     ) 
                     if (existingSession) {
@@ -29,13 +28,13 @@ export async function fakeFetchSession(userId: string): Promise<string|null> {
 }
 
 export async function createFakeSession(userId: string):Promise<string|null> {
-    console.log(userId,' from createFakeSessioncreateFakeSession')
     const sessionId = createId()
 
     fakeSessionStore[sessionId] = {
         userId,
         sessionId, 
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        maxAge: 1000 * 60, 
     }
     
     try {

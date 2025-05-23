@@ -1,1 +1,1 @@
-export type AddUserResult = { id: string } | { id: 'user_already_exists' };
+export type AddUserResult = { message: string } | { message: 'user_already_exists' };

@@ -19,7 +19,6 @@ export async function readUserFile(): Promise<Record<string, User> | null> {
     
     try {
         const parsedFileData = await readFromFile<Record<'string', User>>(USERS_FILE)
-        console.log(parsedFileData, 'parsedFileDataparsedFileData')
         return Object.keys(parsedFileData).length ? parsedFileData : {} 
         // const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
         // if (!rawData.trim()) {
@@ -43,8 +42,9 @@ export async function readUserFile(): Promise<Record<string, User> | null> {
 export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddUserResult | null> {
     const { email, password } = user
     const userExists = await hasUser(email)
+
     if ( userExists ) {
-        return { id: 'user_already_exists' };
+        return { message: 'user_already_exists' };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10) 

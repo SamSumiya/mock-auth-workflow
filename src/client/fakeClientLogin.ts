@@ -1,9 +1,16 @@
 // import { Session } from "../types/session";
 
 // import { fakeLogin } from "../auth/login";
+// import { LoginCredentials } from "../types/user";
 
-// async function fakeClientLogin() {
-//     const testingEmail = 'g_turner@example.com'
-//     const testingPassword = 'password123'
-//     const user = await fakeLogin(testingEmail, testingPassword) 
+// const user = {
+//     email: 'sam_sumiya@sample.com', 
+//     password: 'password123'
 // }
+
+// async function fakeClientLogin(user: LoginCredentials): Promise<>  {
+
+// }
+
+
+// fakeClientLogin(user)

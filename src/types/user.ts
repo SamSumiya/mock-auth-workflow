@@ -8,3 +8,4 @@ export type User = {
 
 export type PublicUser = Omit<User, 'password'>
 export type PreRegisterUser = Omit<User, 'id'> 
+export type LoginCredentials = Pick<User, 'email' | 'password'>
