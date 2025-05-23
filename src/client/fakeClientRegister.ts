@@ -12,6 +12,9 @@ const user = {
 async function fakeClientRegister(user: PreRegisterUser) {
     try { 
         const registeredUser = await fakeRegister(user) 
+        if ( registeredUser && 'message' in registeredUser) {
+            return registeredUser.message
+        }
         if ( typeof registeredUser === 'object' && 
             registeredUser && 
             'email' in registeredUser
@@ -27,3 +30,11 @@ async function fakeClientRegister(user: PreRegisterUser) {
 }
 
 fakeClientRegister(user)
+    .then((result) => {
+        if (result) console.log(result)
+        process.exit(0)
+    })
+    .catch(err => {
+        console.error(err)
+        process.exit(1)
+    })

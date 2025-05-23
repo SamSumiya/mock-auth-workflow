@@ -42,8 +42,9 @@ export async function readUserFile(): Promise<Record<string, User> | null> {
 export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddUserResult | null> {
     const { email, password } = user
     const userExists = await hasUser(email)
+
     if ( userExists ) {
-        return { id: 'user_already_exists' };
+        return { message: 'user_already_exists' };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10) 
