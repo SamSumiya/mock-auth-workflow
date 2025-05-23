@@ -5,13 +5,14 @@ import { createFakeSession, fakeFetchSession } from '../repositories/sessionRepo
 export async function getOrCreateSession( userId: string ): Promise<string|null> {
 
     try {
-       const sessionId = await fakeFetchSession(userId)
-
-       if ( sessionId ) {
+        const sessionId = await fakeFetchSession(userId)
+        console.log(sessionId, 'SessionSessionSession')
+        if ( sessionId ) {
             return sessionId
-       } else {
-            return createFakeSession(userId)
-       }
+        } else {
+             return await createFakeSession(userId)
+            // return createFakeSession(userId)
+        }
     } catch(err) {
         const error = err as Error
         console.error(error)

@@ -2,7 +2,6 @@ import { PreRegisterUser, User } from "../types/user";
 import { fakeRegister } from "../auth/register";
 import { getOrCreateSession } from "../auth/session";
 
-
 const user = {
     firstname: 'Sam',
     lastname: 'Sumiya',
@@ -17,14 +16,13 @@ async function fakeClientRegister(user: PreRegisterUser) {
             registeredUser && 
             'email' in registeredUser
         ) {
-            const sessionId = await getOrCreateSession(registeredUser.id)
+            const sessionId = await getOrCreateSession(registeredUser.userId)
         }
     } catch(err) {
-
+        const error = err instanceof Error ? err : new Error('Failed to register new user')
+        console.error(error)
+        process.exit(1)
     }
-   
-    
-    
 }
 
 fakeClientRegister(user)

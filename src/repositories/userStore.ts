@@ -8,23 +8,27 @@ import bcrypt from 'bcryptjs'
 // Local 
 import { createId } from '../utils/helpers'
 import { User, PublicUser } from '../types/user'
-import { hasUser } from './utils/hasUser'
-
+import { hasUser } from '../utils/hasUser'
 
 import { AddUserResult } from '../types/AddUserResult' 
+import { readFromFile } from '../utils/readFromFile'
 
-const USERS_FILE = path.join(__dirname, './users.json')
+const USERS_FILE = path.join(__dirname, '../fixtures/users.json')
 
 export async function readUserFile(): Promise<Record<string, User> | null> {
+    
     try {
-        const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
-        if (!rawData.trim()) {
-            // File exists but is empty or whitespace
-            return {}
-        }
+        const parsedFileData = await readFromFile<Record<'string', User>>(USERS_FILE)
+        console.log(parsedFileData, 'parsedFileDataparsedFileData')
+        return Object.keys(parsedFileData).length ? parsedFileData : {} 
+        // const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
+        // if (!rawData.trim()) {
+        //     // File exists but is empty or whitespace
+        //     return {}
+        // }
 
-        const parsedData = JSON.parse(rawData) as Record<string, User>
-        return parsedData
+        // const parsedData = JSON.parse(rawData) as Record<string, User>
+        // return parsedData
     } catch(err) {
         if ( err && 
             typeof err === 'object' && 
@@ -32,24 +36,23 @@ export async function readUserFile(): Promise<Record<string, User> | null> {
             ( err as NodeJS.ErrnoException).code === 'ENOENT') {
             return{} 
         }
-         throw err 
+        throw err 
     }
 }
 
 export async function addUser(user: Omit<User, 'id'>): Promise<PublicUser | AddUserResult | null> {
     const { email, password } = user
     const userExists = await hasUser(email)
-
     if ( userExists ) {
         return { id: 'user_already_exists' };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10) 
-    const id = createId()
+    const userId = createId()
 
     const {password: _, ...publicProfile} = {
         ...user, 
-        id 
+        userId
     }
 
     const newUser = {
