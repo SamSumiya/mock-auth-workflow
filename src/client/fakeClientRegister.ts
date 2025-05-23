@@ -17,6 +17,7 @@ async function fakeClientRegister(user: PreRegisterUser) {
             'email' in registeredUser
         ) {
             const sessionId = await getOrCreateSession(registeredUser.userId)
+            
         }
     } catch(err) {
         const error = err instanceof Error ? err : new Error('Failed to register new user')

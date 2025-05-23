@@ -1,5 +1,6 @@
 export type Session = {
     userId: string, 
     sessionId: string, 
-    createdAt: number 
+    createdAt: number, 
+    maxAge?: number, 
 }

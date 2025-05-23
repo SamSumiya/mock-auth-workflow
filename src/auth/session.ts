@@ -3,10 +3,9 @@ import { createFakeSession, fakeFetchSession } from '../repositories/sessionRepo
 
 // Fake Login a user
 export async function getOrCreateSession( userId: string ): Promise<string|null> {
-
     try {
         const sessionId = await fakeFetchSession(userId)
-        console.log(sessionId, 'SessionSessionSession')
+    
         if ( sessionId ) {
             return sessionId
         } else {
