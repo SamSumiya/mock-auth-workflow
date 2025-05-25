@@ -1,10 +1,8 @@
 import { PublicUser, PreRegisterUser } from "../types/user";
 
 // type AddUserResult = { id: string } | { id: 'user_already_exists' };
-import { addUser } from "../repositories/userStore";
+import { addUser } from "../store/mockUserStore";
 import { AddUserResult } from "../types/AddUserResult";
-
-
 
 export async function fakeRegister(user: PreRegisterUser): Promise<PublicUser | AddUserResult | null> {
     try {
