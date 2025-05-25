@@ -1,15 +1,14 @@
-import fs from 'fs/promises'  
-// import { SESSION_FILE } from '../utils/fakeSessionStore'
+import fs from 'fs/promises' 
 import { Session } from "../types/session"
-import { fakeSessionStore } from './fakeSessionStore'
+import { fakeSessionStore } from '../store/mockSessionStore'
 import { createId } from "../utils/helpers"
-import { sessionFilePath } from './fakeSessionStore'
+import { sessionFilePath } from '../store/mockSessionStore'
 import { readFromFile } from '../utils/readFromFile'
 import path from 'path'
 type SessionRecord = Record<string, Session>
 
 export async function fakeFetchSession(userId: string): Promise<string|null> {
-    const sessionFilePath = path.join(__dirname, '../fixtures/session.json')
+    const sessionFilePath = path.join(__dirname, '../fixtures/sessions.json')
     const sessionFile = await readFromFile<SessionRecord>(sessionFilePath)
 
     return new Promise<string|null>((resolve) => {

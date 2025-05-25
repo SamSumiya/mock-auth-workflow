@@ -1,7 +1,7 @@
 import { PreRegisterUser, User } from "../types/user";
 import { fakeRegister } from "../auth/register";
 import { getOrCreateSession } from "../auth/session";
-import { setCookie } from "./mockCookieStore";
+import { setCookie } from "../store/mockCookieStore";
 
 const user = {
     firstname: 'Sam',
@@ -22,7 +22,7 @@ async function fakeClientRegister(user: PreRegisterUser) {
 
         const sessionId = await getOrCreateSession(registeredUser.userId)
         if ( sessionId ) {
-            setCookie(sessionId, 'sid', sessionId, 1000 * 60)
+            await setCookie(sessionId, 'sid', sessionId, 1000 * 60)
         }
     } catch(err) {
         const error = err instanceof Error ? err : new Error('Failed to register new user')
