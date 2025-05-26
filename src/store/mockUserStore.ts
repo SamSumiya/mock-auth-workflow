@@ -18,7 +18,7 @@ const USERS_FILE = path.join(__dirname, '../fixtures/users.json')
 export async function readUserFile(): Promise<Record<string, User> | null> {
     
     try {
-        const parsedFileData = await readFromFile<Record<'string', User>>(USERS_FILE)
+        const parsedFileData = await readFromFile<Record<string, User>>(USERS_FILE)
         return Object.keys(parsedFileData).length ? parsedFileData : {} 
         // const rawData = await fs.readFile(USERS_FILE, 'utf-8') 
         // if (!rawData.trim()) {

@@ -27,7 +27,6 @@ async function fakeClientRegister(user: PreRegisterUser) {
     } catch(err) {
         const error = err instanceof Error ? err : new Error('Failed to register new user')
         console.error(error)
-        process.exit(1)
     }
 }
 
