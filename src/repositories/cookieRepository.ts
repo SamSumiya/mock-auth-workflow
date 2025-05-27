@@ -29,4 +29,3 @@ export async function persistCookie(name: string, sessionId: string, cookie: Coo
 }
 
 // : Promise<Record<string, Cookie>>
-

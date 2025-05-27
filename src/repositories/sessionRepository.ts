@@ -14,8 +14,7 @@ export async function fakeFetchSession(userId: string): Promise<string|null> {
     return new Promise<string|null>((resolve) => {
         setTimeout(() => {
             const existingSession = Object.entries(sessionFile).find(
-                    ([_,session]) => {
-                        session.userId === userId}
+                    ([_,session]) => session.userId === userId
                     ) 
                     if (existingSession) {
                         return resolve(existingSession[0])
