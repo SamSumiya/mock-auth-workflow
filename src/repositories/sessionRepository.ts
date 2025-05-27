@@ -1,8 +1,8 @@
 import fs from 'fs/promises' 
 import { Session } from "../types/session"
-import { fakeSessionStore } from '../store/mockSessionStore'
+import { fakeSessionStore } from '../services/sessionStore'
 import { createId } from "../utils/helpers"
-import { sessionFilePath } from '../store/mockSessionStore'
+import { sessionFilePath } from '../services/sessionStore'
 import { readFromFile } from '../utils/readFromFile'
 import path from 'path'
 type SessionRecord = Record<string, Session>

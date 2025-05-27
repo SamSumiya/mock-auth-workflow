@@ -10,7 +10,7 @@ import { createId } from '../utils/helpers'
 import { User, PublicUser } from '../types/user'
 import { hasUser } from '../utils/hasUser'
 
-import { AddUserResult } from '../types/AddUserResult' 
+import { AddUserResult } from '../types/addUserResult' 
 import { readFromFile } from '../utils/readFromFile'
 
 const USERS_FILE = path.join(__dirname, '../fixtures/users.json')

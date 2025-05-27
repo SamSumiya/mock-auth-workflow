@@ -11,4 +11,5 @@ export async function writeToFile<T>(selectedPath: string, data: T ): Promise<vo
         console.error(error)
         throw error
     }
+    
 }
