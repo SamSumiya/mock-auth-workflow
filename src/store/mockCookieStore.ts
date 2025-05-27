@@ -13,6 +13,6 @@ export async function setCookie(sessionId: string, name: string, value: string, 
     const cookieData: Cookie =  { value, expiresAt } 
     cookieStore[sessionId][name] = cookieData;
 
-    return await persistCookie(name, cookieData)
+    return await persistCookie(name, sessionId, cookieData)
 }
 

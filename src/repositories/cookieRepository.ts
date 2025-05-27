@@ -3,18 +3,21 @@ import { readFromFile } from "../utils/readFromFile";
 import { Cookie } from "../types/cookie";
 import path from 'path';
 
-type CookieRecord = Record<string, Cookie> 
+type CookieRecord = Record<string, Record<string, Cookie>>
 
 const cookiesPath = path.join(__dirname, "../fixtures/cookies.json");
 
-export async function persistCookie(name: string, cookie: Cookie): Promise<void> {
+export async function persistCookie(name: string, sessionId: string, cookie: Cookie): Promise<void> {
     return new Promise((resolve, reject) => {
         setTimeout(async () => {
             try {
                 const existingFile = await readFromFile<CookieRecord>(cookiesPath)
                 const updatedFile: CookieRecord = {
                     ...existingFile, 
-                    [name]: cookie
+                    [sessionId]: {
+                        ...(existingFile[sessionId] || {} ),
+                        [name]: cookie
+                    }
                 }
                 await writeToFile(cookiesPath, updatedFile);
                 resolve(); 
@@ -24,3 +27,6 @@ export async function persistCookie(name: string, cookie: Cookie): Promise<void>
         }, 200)
     })
 }
+
+// : Promise<Record<string, Cookie>>
+
