@@ -1,2 +1,2 @@
-import { cookieStore } from "../services/mockCookieStore"
+import { cookieStore } from "../services/cookieStore"
 
