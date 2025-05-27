@@ -1,7 +1,7 @@
 import { PreRegisterUser, User } from "../types/user";
 import { fakeRegister } from "../auth/register";
 import { getOrCreateSession } from "../auth/session";
-import { setCookie } from "../store/mockCookieStore";
+import { setCookie } from "../services/mockCookieStore";
 
 const user = {
     firstname: 'Sam',

@@ -1,4 +1,4 @@
-import { readUserFile } from "../store/mockUserStore"
+import { readUserFile } from "../services/mockUserStore"
 
 export async function hasUser(email: string): Promise<boolean> {    
     try {
