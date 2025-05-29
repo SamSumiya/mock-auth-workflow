@@ -59,7 +59,7 @@ describe('readFromFile', () => {
     it ('Should return an empty object when the file does not exist - ENOENT', async () => {
         const filepath = 'nonexistant.json'
 
-        const error = new Error() as NodeJS.ErrnoException
+        const error = new Error('File not found') as NodeJS.ErrnoException
         error.code = 'ENOENT';
         mockReadFile.mockRejectedValueOnce(error)
 
@@ -69,12 +69,13 @@ describe('readFromFile', () => {
         expect(data).toEqual({})
     }) 
 
-    it('Should reject if the input data is invalid', async() => {
-        const err = new Error('something went wrong') 
-
+    it('Should throw error for non-ENOENT file system errors', async() => {
+        const err = new Error('Permission denied') as NodeJS.ErrnoException 
+        err.code = 'EACCES'
+        
         mockReadFile.mockRejectedValueOnce(err)
 
-        await expect(readFromFile('invalid.json')).rejects.toThrow("something went wrong")
+        await expect(readFromFile('restricted.json')).rejects.toThrow('Permission denied')
     })
 
     it('Should different values with sequential calls', async () => {
@@ -91,8 +92,7 @@ describe('readFromFile', () => {
         expect(mockReadFile).toHaveBeenCalledWith('a.json', 'utf-8')
         expect(one).toEqual(first)
         expect(mockReadFile).toHaveBeenCalledWith('b.json', 'utf-8')
-        expect(second).toEqual(two)
-
+        expect(second).toEqual(two)  
     })
 
     it('Should throw if JSON is invalid (no braces)', async () => {
@@ -100,6 +100,22 @@ describe('readFromFile', () => {
 
         await expect(readFromFile('bad.json')).rejects.toThrow(SyntaxError);
     });
+
+    it('should handle null and primitive values', async() => {
+        mockReadFile.mockResolvedValueOnce('null')
+        const result = await readFromFile('null.json') 
+        expect(result).toBeNull()
+    })
+    
+    it('should handle very large JSON files', async () => {
+        const largeArray = Array(1000).fill({data: 'test'})
+        mockReadFile.mockResolvedValueOnce(JSON.stringify(largeArray))
+
+        const result = await readFromFile<Array<{data: string}>>('large.json')
+        expect(result.length).toBe(1000)
+        expect(result).toHaveLength(1000)
+        expect(result[0].data).toBe('test')
+    })
 
 })
 
