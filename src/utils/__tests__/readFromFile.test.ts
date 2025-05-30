@@ -7,186 +7,206 @@ import { readFromFile } from '../readFromFile'
 
 const mockReadFile = fs.readFile as jest.Mock
 
-describe('readFromFile', () => {
-    afterEach(() => {
-        jest.clearAllMocks()
-    })
+afterEach(() => {
+    jest.clearAllMocks()
+})
 
-    it('Should return parsed data from file', async () => {
-        const user = { name: "Sam" } 
+describe(('readFromFile - data parsing'), ()=> {
+    it('should return parsed data from file', async () => {
+        // Arrange
+        const testUser = { name: 'Sam' } 
+        mockReadFile.mockResolvedValueOnce(JSON.stringify(testUser))
         
-        mockReadFile.mockResolvedValueOnce(JSON.stringify(user)) 
-        const data = await readFromFile<typeof user>('mock/users.json')
+        // Act
+        const result = await readFromFile<{name: string}>('testUser.json')
 
-        expect(mockReadFile).toHaveBeenCalledWith('mock/users.json', 'utf-8')
-        expect(data).toEqual(user)
+        // Assert 
+        expect(mockReadFile).toHaveBeenCalledWith('testUser.json', 'utf-8')
+        expect(result).toEqual(testUser)
+        expect(result.name).toBe('Sam')
     })
 
-    it('Should return {} with empty file', async () => {
-        const inputFile = '   \n  \t'
+    it ('should parse valid primitive JSON', async () => {
+        // Arrange
+        mockReadFile.mockResolvedValueOnce('123')
 
-        mockReadFile.mockResolvedValueOnce(inputFile)
-        const data = await readFromFile('mock/users.json')
+        // Act 
+        const result = await readFromFile<number>('primivitive.json')
 
-        expect(mockReadFile).toHaveBeenCalledWith('mock/users.json', 'utf-8')
-        expect(data).toEqual({})
-    })  
-
-    it('Should return array when JSON is array', async() => {
-        const users = [ {id: 1}, {id: 2} ]
-
-        mockReadFile.mockResolvedValueOnce(JSON.stringify(users)) 
-        
-        const response = await readFromFile<typeof users>('users.json')
-        expect(mockReadFile).toHaveBeenCalledWith('users.json', 'utf-8' )
-        expect(response.length).toBe(2)
-        expect(response[0].id).toBe(1)
-        expect(Array.isArray(response)).toBe(true)
+        // Assert
+        expect(result).toBe(123)
     })
 
-    it('Should parse JSON data with white spaces around it', async () => {
-        const obj = { name: 'Trimmed' }; 
-        const input = ` \n  ${JSON.stringify(obj)}  \t`
+    it('Should return array when JSON is array', async () => {
+        // Arrange
+        const array = [ {id: 1}, {id: 2} ]
+        mockReadFile.mockResolvedValueOnce(JSON.stringify(array)) 
 
-        mockReadFile.mockResolvedValueOnce(input)
-        const response = await readFromFile<typeof obj>('trimmed.json')
+        // Act
+        const result = await readFromFile<Array<{id: number}>>('array.json')
 
-        expect(mockReadFile).toHaveBeenCalledWith('trimmed.json', 'utf-8')
-        expect(response).toEqual(obj) 
-
+        // Assert 
+        expect(mockReadFile).toHaveBeenCalledWith('array.json', 'utf-8')
+        expect(result).toEqual(array)
+        expect(Array.isArray(result)).toBe(true)
+        expect(result).toHaveLength(2)
+        expect(result[0].id).toBe(1)
+        expect(Object.keys(result)).toHaveLength(2)
     })
 
-    it ('Should return an empty object when the file does not exist - ENOENT', async () => {
-        const filepath = 'nonexistant.json'
-
-        const error = new Error('File not found') as NodeJS.ErrnoException
-        error.code = 'ENOENT';
-        mockReadFile.mockRejectedValueOnce(error)
-
-        const data = await readFromFile(filepath)
-
-        expect(mockReadFile).toHaveBeenCalledWith(filepath, 'utf-8');
-        expect(data).toEqual({})
-    }) 
-
-    it('Should throw error for non-ENOENT file system errors', async() => {
-        const err = new Error('Permission denied') as NodeJS.ErrnoException 
-        err.code = 'EACCES'
-        
-        mockReadFile.mockRejectedValueOnce(err)
-
-        await expect(readFromFile('restricted.json')).rejects.toThrow('Permission denied')
-    })
-
-    it('Should different values with sequential calls', async () => {
+    it('Should return different values with sequential calls', async () => {
+        // Arrange 
         const first = {id: 1} 
         const second = {id: 2}
+        mockReadFile.mockResolvedValueOnce(JSON.stringify(first)) 
+        mockReadFile.mockResolvedValueOnce(JSON.stringify(second)) 
 
-        mockReadFile
-            .mockResolvedValueOnce(JSON.stringify(first))
-            .mockResolvedValueOnce(JSON.stringify(second)) 
+        // Act 
+        const one = await readFromFile<{id: number}>('one.json')
+        const two = await readFromFile<{id: number}>('two.json') 
 
-        const one = await readFromFile<typeof first>('a.json')
-        const two = await readFromFile<typeof second>('b.json')
+        // Assert
+        expect(mockReadFile).toHaveBeenCalledTimes(2)
+        expect(mockReadFile).toHaveBeenCalledWith('one.json', 'utf-8')
+        expect(mockReadFile).toHaveBeenCalledWith('two.json', 'utf-8')
 
-        expect(mockReadFile).toHaveBeenCalledWith('a.json', 'utf-8')
-        expect(one).toEqual(first)
-        expect(mockReadFile).toHaveBeenCalledWith('b.json', 'utf-8')
-        expect(second).toEqual(two)  
+        expect(one.id).toBe(1)
+        expect(two.id).toBe(2)
+        expect(first).not.toEqual(two)
     })
 
-    it('Should throw if JSON is invalid (no braces)', async () => {
-        mockReadFile.mockResolvedValueOnce('invalid json');
+    it ('should handle very large valid JSON', async () => {
+        // Arrange 
+        const largeObject = Array.from({length: 10000 }, (_, i) => ({id: i, name: `Name${i}`}))
+        mockReadFile.mockResolvedValueOnce(JSON.stringify(largeObject))
 
-        await expect(readFromFile('bad.json')).rejects.toThrow(SyntaxError);
-    });
+        // Act
+        const result = await readFromFile<Array<{id: number, name: string}>>('largeFile.json')
 
-    it('should handle null and primitive values', async() => {
-        mockReadFile.mockResolvedValueOnce('null')
-        const result = await readFromFile('null.json') 
-        expect(result).toBeNull()
+        // Assert
+        expect(mockReadFile).toHaveBeenCalledWith('largeFile.json', 'utf-8')
+        expect(mockReadFile).toHaveBeenCalledTimes(1)
+        expect(result).toEqual(largeObject)
+        expect(result).toHaveLength(10000)
+        expect(Array.isArray(result)).toBe(true)
+    })
+})
+
+describe('readFromFile - Edge Cases', () => {
+    it('Should parse JSON data with white spaces around it', async () => {
+        // Arrange 
+        const testUser = {name: 'Sam II'}
+        mockReadFile.mockResolvedValueOnce(`  \n ${JSON.stringify(testUser)}  \t `) 
+        
+        // Act
+        const result = await readFromFile<{ name: string}>('whitespace.json') 
+
+        // Assert
+        expect(mockReadFile).toHaveBeenCalledWith('whitespace.json', 'utf-8') 
+        expect(result).toEqual(testUser)
+        expect(result.name).toBe('Sam II')
+    })
+
+    it('should return empty object with empty', async() => {
+        // Arrange
+        const input = '  \n  \t'
+        mockReadFile.mockResolvedValueOnce(input)
+
+        // Act
+        const result = await readFromFile<typeof input>('empty.json')
+
+        // Assert
+        expect(mockReadFile).toHaveBeenCalledWith('empty.json', 'utf-8')
+        expect(result).toEqual({})
+        expect(typeof result).toBe('object')
+        expect(Object.keys(result)).toHaveLength(0)
+    })
+
+    it ('should return empty object when file is completely empty', async () => {
+        // Arrange 
+        mockReadFile.mockResolvedValueOnce('') 
+        
+        // Act 
+        const result = await readFromFile<Record<string, unknown>>('empty.json')
+
+        // Assert 
+        expect(mockReadFile).toHaveBeenCalledWith('empty.json', 'utf-8')
+        expect(result).toEqual({})
+        expect(typeof result).toBe('object') 
+        expect(Object.keys(result)).toHaveLength(0)
+    })
+})
+
+describe('readFromFile - Error Handling', () => {
+    it('should return empty object for ENOENT file system errors', async () => { 
+        // Arrange 
+        const path = 'nonexists.json'
+        const error = new Error('no file found') as NodeJS.ErrnoException
+        error.code = 'ENOENT'
+        mockReadFile.mockRejectedValueOnce(error)
+        
+        // Act
+        const result = await readFromFile<{}>(path)
+
+        expect(mockReadFile).toHaveBeenCalledWith(path, 'utf-8')
+        expect(mockReadFile).toHaveBeenCalledTimes(1)
+        expect(result).toEqual({}) 
+        expect(typeof result).toBe('object')
+        expect(Object.keys(result)).toHaveLength(0)
+    })
+
+    it('should handle null rejection', async() => {
+        // Arrange 
+        const nullError = null
+        mockReadFile.mockRejectedValueOnce(nullError)
+        
+        // Act & Assert
+        await expect(readFromFile('null.json')).rejects.toThrow(TypeError)
+        expect(mockReadFile).toHaveBeenCalledWith('null.json', 'utf-8')
+        expect(mockReadFile).toHaveBeenCalledTimes(1)
     })
     
-    it('should handle very large JSON files', async () => {
-        const largeArray = Array(1000).fill({data: 'test'})
-        mockReadFile.mockResolvedValueOnce(JSON.stringify(largeArray))
+    
+    it ('should throw with invalid JSON data', async() => {
+        // Arrange 
+        const invalid = '{ "invalid" }'
+        mockReadFile.mockResolvedValueOnce(invalid)
 
-        const result = await readFromFile<Array<{data: string}>>('large.json')
-        expect(result.length).toBe(1000)
-        expect(result).toHaveLength(1000)
-        expect(result[0].data).toBe('test')
+        // Act && Assert
+        await expect(readFromFile('invalidJSON.json')).rejects.toThrow(SyntaxError)
+        expect(mockReadFile).toHaveBeenCalledWith('invalidJSON.json', 'utf-8') 
+    }) 
+
+    it('should throw error for malformed JSON with extra characters', async () => { 
+        // Arrange 
+        const invalid = '{"name": "John"} extra text';
+        mockReadFile.mockResolvedValueOnce(invalid)
+
+        // Act && Assert
+        await expect(readFromFile('malformed.json')).rejects.toThrow(SyntaxError)
+        expect(mockReadFile).toHaveBeenCalledWith('malformed.json', 'utf-8') 
+    }) 
+
+    it('should handle permission denied errors (EACCES)', async () => {
+        // Arrange
+        const error = new Error('EACCES: permission denied') as NodeJS.ErrnoException
+        error.code = 'EACCES'
+        mockReadFile.mockRejectedValueOnce(error)
+
+        // Act && Assert
+        await expect(readFromFile('restricted.json')).rejects.toThrow('EACCES')
+        expect(mockReadFile).toHaveBeenCalledWith('restricted.json', 'utf-8') 
+    })
+
+    it('should handle file too large errors(EFBIG)', async () => {
+        // Arrange
+        const error = new Error('EFBIG: file too big') as NodeJS.ErrnoException
+        error.code = 'EFBIG'
+        mockReadFile.mockRejectedValueOnce(error)
+
+        // ACT && Assert
+        await expect( readFromFile('large.json')).rejects.toThrow('EFBIG')
     })
 
 })
 
-
-// jest.mock('fs/promises', () => ({
-//     readFile: jest.fn()
-// }))
-
-// import fs from 'fs/promises'
-// import { readFromFile } from '../readFromFile'
-
-// const mockReadFile = fs.readFile as jest.Mock
-
-// describe('readFromFile', () => {
-//     afterEach(() => {
-//         jest.clearAllMocks()
-//     })
-
-//     it('Should parse data and return user', async () => {
-//         const user = { name: 'Sam' } 
-
-//         mockReadFile.mockResolvedValueOnce(JSON.stringify(user)) 
-//         const data = await readFromFile<typeof user>('mock/data.json')
-
-//         expect(mockReadFile).toHaveBeenCalledWith('mock/data.json', 'utf-8')
-//         expect(data).toEqual(user) 
-//     })
-
-//     it ('Should parse and return an array with JSONs', async () => {
-//         const arr = [{ name: 'Sam' } , {name: 'Grace'}]
-
-//         mockReadFile.mockResolvedValueOnce(JSON.stringify(arr)) 
-
-//         const response = await readFromFile<typeof arr>('mock/array.json')
-
-//         expect(mockReadFile).toHaveBeenCalledWith('mock/array.json', 'utf-8')
-//         expect(response).toEqual(arr)
-//     })  
-
-//     it('Should handle deeply nested JSON', async () => {
-//         const data = { user: { profile: { name: 'Sam' } } };
-//         mockReadFile.mockResolvedValueOnce(JSON.stringify(data));
-
-//         const result = await readFromFile<typeof data>('deep.json');
-
-//         expect(result).toEqual(data);
-//     });
-
-
-//     it('Should return an empty object with empty input', async () => {
-//         const input = ' \n \t'; 
-
-//         mockReadFile.mockResolvedValueOnce(input) 
-//         const response = await readFromFile('mock/data.json')
-
-//         expect(mockReadFile).toHaveBeenCalledWith('mock/data.json', 'utf-8')
-//         expect(response).toEqual({})
-//     })  
-
-//     it ('Should return an empty object when the file does not exist - ENOENT', async () => {
-//         const filePath = 'nonexistent.json';
-        
-//         const err = new Error('No file found') as NodeJS.ErrnoException
-//         err.code = 'ENOENT'
-
-//         mockReadFile.mockRejectedValue(err)
-
-//         const result = await readFromFile(filePath) 
-
-//         expect(mockReadFile).toHaveBeenCalledWith(filePath, 'utf-8') 
-//         expect(result).toEqual({})
-//     })
-
-// })
