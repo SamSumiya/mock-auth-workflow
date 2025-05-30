@@ -1,7 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
 
-
 export async function writeToFile<T>(selectedPath: string, data: T ): Promise<void> {
     try {
         // const absPath = path.join(__dirname, selectedPath)
@@ -11,5 +10,5 @@ export async function writeToFile<T>(selectedPath: string, data: T ): Promise<vo
         console.error(error)
         throw error
     }
-    
+
 }
