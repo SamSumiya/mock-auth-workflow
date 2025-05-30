@@ -22,11 +22,14 @@ describe('createTempFile', () => {
     })
 
     it('should create a new director and a file with given content', async () => {
+        // Arrange 
         mockMkdir.mockResolvedValueOnce(undefined)
         mockWriteFile.mockResolvedValueOnce(undefined)
 
+        // Act
         const result = await createTempFile('hello world', 'test.json') 
 
+        // Assert 
         expect(mockMkdir).toHaveBeenCalledWith(
             expect.stringContaining('__test__'),
             {recursive: true}
@@ -45,6 +48,7 @@ describe('createTempFile', () => {
         // Arrange 
         mockMkdir(undefined)
         mockWriteFile(undefined)
+        // Watch out for mockReturn or mockResolved // 
         mockRandomUUID.mockReturnValueOnce('uniqname')
 
         // Act 
@@ -55,11 +59,14 @@ describe('createTempFile', () => {
             expect.stringContaining('__test__'), 
             {recursive: true}
         )
+
         expect(mockWriteFile).toHaveBeenCalledWith(
             expect.stringContaining('uniqname'), 
             'hello world II', 
             'utf-8'
         )
+
         expect(result).toMatch(/__test__\/uniqname\.json$/)
     })  
+    
 })
