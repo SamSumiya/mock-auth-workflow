@@ -30,6 +30,7 @@ describe('writeToFile - parse data', () => {
 })
 
 describe('writeToFile - error handling', () => {
+
     it ('should reject and throw when fs.write fails', async() => {
         // Arrange
         const error = new Error('EACCES: permission denied')
@@ -41,7 +42,12 @@ describe('writeToFile - error handling', () => {
     })
 })
 
+
 describe('writeToFile - Edge Case(s)', () => {
+    it ('should throw an error when file path is empty', async() => {
+        await expect(writeToFile('', { test: false })).rejects.toThrow('❌ File path is invalid or empty')
+    })
+
     it ('should reject and throw when input value is undefined', async () => {
         // Arrange
         const undefinedError = undefined
@@ -51,5 +57,12 @@ describe('writeToFile - Edge Case(s)', () => {
         // Act
         await expect(writeToFile('undefined.json', undefinedError)).rejects.toThrow('❌ Cannot write null or undefined to file: undefined.json')
         expect(mockWriteToFile).not.toHaveBeenCalled()
+    })
+
+    it ('should throw if JSON.stringigy failes - circular structure', async () => {
+        const a: any = {} 
+        a.self = a 
+
+        await expect( writeToFile('circular.json', a)).rejects.toThrow()
     })
 })
