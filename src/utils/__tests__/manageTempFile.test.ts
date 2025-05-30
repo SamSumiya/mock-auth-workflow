@@ -14,9 +14,18 @@ describe('createTempFile', () => {
         mockMkdir.mockResolvedValueOnce(undefined)
         mockWriteFile.mockResolvedValueOnce(undefined)
 
-        await createTempFile('myFolder', 'test.json') 
+        const result = await createTempFile('myFolder', 'test.json') 
 
-        expect(mockMkdir).toHaveBeenCalled()
-        expect(mockWriteFile).toHaveBeenCalled() 
+        expect(mockMkdir).toHaveBeenCalledWith(
+            expect.stringContaining('__test__'),
+            {recursive: true}
+        )
+        expect(mockWriteFile).toHaveBeenCalledWith(
+            expect.stringContaining('test.json'),
+            'myFolder', 
+            'utf-8'
+        ) 
+
+        expect(result).toMatch(/__test__\/test\.json$/)
     })
 })
