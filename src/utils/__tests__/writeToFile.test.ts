@@ -6,6 +6,7 @@ jest.mock(('fs/promises'), () => ({
 import fs from 'fs/promises' 
 import { writeToFile } from "../writeToFile"
 
+
 const mockWriteToFile = fs.writeFile as jest.Mock
 
 afterEach(() => {
@@ -36,5 +37,17 @@ describe('writeToFile - error handling', () => {
         // Act && Assert
         await expect(writeToFile('defined.json', { a: '1' })).rejects.toThrow('EACCES: permission denied')
         expect(mockWriteToFile).toHaveBeenCalledTimes(1)
+    })
+})
+
+describe('writeToFile - Edge Cases', () => {
+    it ('should reject and throw when input value is undefined', async () => {
+        // Arrange
+        const undefinedError = undefined
+
+        mockWriteToFile.mockRejectedValueOnce(undefinedError)
+
+        // Act
+        await expect(writeToFile('undefined.json', undefinedError)).rejects.toThrow('❌ Cannot write null or undefined to file: undefined.json')
     })
 })
