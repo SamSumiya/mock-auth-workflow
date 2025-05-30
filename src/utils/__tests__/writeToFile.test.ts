@@ -50,5 +50,6 @@ describe('writeToFile - Edge Case(s)', () => {
 
         // Act
         await expect(writeToFile('undefined.json', undefinedError)).rejects.toThrow('❌ Cannot write null or undefined to file: undefined.json')
+        expect(mockWriteToFile).not.toHaveBeenCalled()
     })
 })
