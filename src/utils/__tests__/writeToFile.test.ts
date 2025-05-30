@@ -28,5 +28,13 @@ describe('writeToFile - parse data', () => {
 })
 
 describe('writeToFile - error handling', () => {
-
+    it ('should reject and throw when fs.write fails', async() => {
+        // Arrange
+        const error = new Error('EACCES: permission denied')
+        mockWriteToFile.mockRejectedValueOnce(error)
+        
+        // Act && Assert
+        await expect(writeToFile('defined.json', { a: '1' })).rejects.toThrow('EACCES: permission denied')
+        expect(mockWriteToFile).toHaveBeenCalledTimes(1)
+    })
 })
