@@ -18,6 +18,7 @@ describe('writeToFile - parse data', () => {
         // Arrange 
         const data = { name: 'Sam' } 
         const path = 'file.json'
+        mockWriteToFile.mockResolvedValueOnce(undefined)
 
         // Act 
         await writeToFile( path, data )
@@ -40,7 +41,7 @@ describe('writeToFile - error handling', () => {
     })
 })
 
-describe('writeToFile - Edge Cases', () => {
+describe('writeToFile - Edge Case(s)', () => {
     it ('should reject and throw when input value is undefined', async () => {
         // Arrange
         const undefinedError = undefined
