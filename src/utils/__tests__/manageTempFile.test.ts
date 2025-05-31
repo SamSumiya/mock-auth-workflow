@@ -19,7 +19,7 @@ const mockRandomUUID = crypto.randomUUID as jest.Mock
 describe('createTempFile - success', () => {
     afterEach(() => {
         jest.clearAllMocks()
-    })
+    }) 
 
     it('should create a new director and a file with given content', async () => {
         // Arrange 
@@ -121,7 +121,7 @@ describe('createTempFile - fail' , () => {
             new Error('EACCES: no permission'), 
             { code: 'EACCES'} 
         ) as NodeJS.ErrnoException 
-        
+
         mockMkdir.mockRejectedValueOnce(eaccesError)
 
         // Act 
