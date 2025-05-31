@@ -16,7 +16,7 @@ const mockWriteFile = fs.writeFile as jest.Mock
 const mockRandomUUID = crypto.randomUUID as jest.Mock
 
 
-describe('createTempFile', () => {
+describe('createTempFile - success', () => {
     afterEach(() => {
         jest.clearAllMocks()
     })
@@ -68,5 +68,27 @@ describe('createTempFile', () => {
 
         expect(result).toMatch(/__test__\/uniqname\.json$/)
     })  
-    
+})
+
+describe('createTempFile - fail' , () => {
+    afterEach(() => {
+        jest.clearAllMocks()
+    })
+
+    it('should reject when the file name already exists', async() => {
+        // Arrange
+        const eexistError = Object.assign(
+            new Error('EEXIST: Directory already exists'), 
+            { code: 'EEXIST'}
+        ) as NodeJS.ErrnoException
+
+        mockMkdir.mockRejectedValueOnce(eexistError)
+
+        // Act 
+        const promise = createTempFile('hello');
+
+        // Asssert 
+        await expect(promise).rejects.toThrow('EEXIST')
+        await expect(promise).rejects.toMatchObject({ code: 'EEXIST'})
+    })
 })
