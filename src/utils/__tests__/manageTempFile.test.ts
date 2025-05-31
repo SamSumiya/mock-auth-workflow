@@ -81,6 +81,9 @@ describe('createTempFile - fail' , () => {
             new Error('EEXIST: Directory already exists'), 
             { code: 'EEXIST'}
         ) as NodeJS.ErrnoException
+        // less preferred  
+        // const eexistError = new Error('EEXIST: Directory already exists') as NodeJS.ErrnoException
+        // eexistError.code = 'EEXIST'
 
         mockMkdir.mockRejectedValueOnce(eexistError)
 
@@ -90,5 +93,45 @@ describe('createTempFile - fail' , () => {
         // Asssert 
         await expect(promise).rejects.toThrow('EEXIST')
         await expect(promise).rejects.toMatchObject({ code: 'EEXIST'})
+    })
+
+    it ('should throw an ENOENT error when a parent directory does not exist', async () => {
+        // Arrange 
+        const enoentError = Object.assign(
+            new Error('ENOENT: No Dir nor no file'), 
+            {code: 'ENOENT'} 
+        ) as NodeJS.ErrnoException
+
+        mockMkdir.mockRejectedValueOnce(enoentError)
+
+        // Act
+        const promise = createTempFile('hello enoent')
+
+        // Assert
+        await expect(promise).rejects.toThrow('ENOENT: No Dir nor no file')
+        await expect(promise).rejects.toMatchObject({
+            message: expect.stringContaining('ENOENT'),
+            code: 'ENOENT'
+        });
+    })
+
+    it ('should throw an EACCES error when there is a permission issue', async () => {
+        // Arrange 
+        const eaccesError = Object.assign(
+            new Error('EACCES: no permission'), 
+            { code: 'EACCES'} 
+        ) as NodeJS.ErrnoException 
+        
+        mockMkdir.mockRejectedValueOnce(eaccesError)
+
+        // Act 
+        const promise = createTempFile('hello EACCES')
+
+        // ASSERT
+        await expect(promise).rejects.toThrow('EACCES: no permission')
+        await expect(promise).rejects.toMatchObject({
+            message: expect.stringContaining('EACCES: no permission'), 
+            code: 'EACCES'
+        })
     })
 })
