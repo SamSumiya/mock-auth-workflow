@@ -21,7 +21,7 @@ describe('createTempFile - success', () => {
         jest.clearAllMocks()
     }) 
 
-    it('should create a new director and a file with given content', async () => {
+    it('should create a new directory and a file with given content', async () => {
         // Arrange 
         mockMkdir.mockResolvedValueOnce(undefined)
         mockWriteFile.mockResolvedValueOnce(undefined)
@@ -29,7 +29,10 @@ describe('createTempFile - success', () => {
         // Act
         const result = await createTempFile('hello world', 'test.json') 
 
-        // Assert 
+        // Assert
+        expect(mockMkdir).toHaveBeenCalledTimes(1)
+        expect(mockWriteFile).toHaveBeenCalledTimes(1)
+
         expect(mockMkdir).toHaveBeenCalledWith(
             expect.stringContaining('__test__'),
             {recursive: true}
@@ -46,8 +49,8 @@ describe('createTempFile - success', () => {
 
     it('should get a name from randomUUID when file name is not provided', async () => {
         // Arrange 
-        mockMkdir(undefined)
-        mockWriteFile(undefined)
+        mockMkdir.mockResolvedValueOnce(undefined)
+        mockWriteFile.mockResolvedValueOnce(undefined)
         // Watch out for mockReturn or mockResolved // 
         mockRandomUUID.mockReturnValueOnce('uniqname')
 
@@ -68,6 +71,7 @@ describe('createTempFile - success', () => {
 
         expect(result).toMatch(/__test__\/uniqname\.json$/)
     })  
+
 })
 
 describe('createTempFile - fail' , () => {
@@ -93,6 +97,7 @@ describe('createTempFile - fail' , () => {
         // Asssert 
         await expect(promise).rejects.toThrow('EEXIST')
         await expect(promise).rejects.toMatchObject({ code: 'EEXIST'})
+        await expect(mockWriteFile).not.toHaveBeenCalled()
     })
 
     it ('should throw an ENOENT error when a parent directory does not exist', async () => {
