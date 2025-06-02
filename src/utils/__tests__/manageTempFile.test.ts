@@ -10,7 +10,6 @@ jest.mock('crypto', () => ({
 import fs from 'fs/promises'
 import crypto from 'crypto'
 import { createTempFile, cleanTempFiles } from "../manageTempFile"
-import { mkdir } from 'fs'
 
 const mockMkdir = fs.mkdir as jest.MockedFunction<typeof fs.mkdir>;
 const mockWriteFile = fs.writeFile as jest.MockedFunction<typeof fs.writeFile>;
@@ -177,6 +176,24 @@ describe('createTempFile', () => {
             )
             expect(result).toMatch(/__test__\/empty\.json$/)
         })
+    })
+
+    it ('should handle special characters in filename', async () => {
+        // Arrange
+        mockMkdir.mockResolvedValue(undefined)
+        mockWriteFile.mockResolvedValue(undefined)
+
+        // Act
+        const result = await createTempFile('content', 'file-with_special.chars.json')
+
+        // Assert 
+        expect(mockWriteFile).toHaveBeenCalledWith(
+            expect.stringContaining('file-with_special.chars.json'),
+            'content',
+            'utf-8'
+        )
+
+        expect(result).toMatch(/__test__\/file-with_special.chars\.json$/)
     })
 })
 
