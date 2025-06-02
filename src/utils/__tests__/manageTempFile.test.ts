@@ -1,7 +1,10 @@
 jest.mock('fs/promises', () => ({
     mkdir: jest.fn(), 
     writeFile: jest.fn(),
-    access: jest.fn()
+    access: jest.fn(),
+    readdir: jest.fn(), 
+    unlink: jest.fn(),
+    rmdir: jest.fn()
 }))
 
 jest.mock('crypto', () => ({
@@ -14,62 +17,17 @@ import { createTempFile, cleanTempFiles, exists } from "../manageTempFile"
 
 const mockMkdir = fs.mkdir as jest.MockedFunction<typeof fs.mkdir>;
 const mockWriteFile = fs.writeFile as jest.MockedFunction<typeof fs.writeFile>;
-const mockExists = fs.access as jest.MockedFunction<typeof fs.access>
+const mockAccess = fs.access as jest.MockedFunction<typeof fs.access>
+const mockReaddir = fs.readdir as jest.Mock
+const mockUnlink = fs.unlink as jest.MockedFunction<typeof fs.unlink>
+const mockRmdir = fs.rmdir as jest.MockedFunction<typeof fs.rmdir>
 const mockRandomUUID = crypto.randomUUID as jest.MockedFunction<typeof crypto.randomUUID>
 
 describe('manageTempFile', () => {
     afterEach(() => {
         jest.clearAllMocks()
-    }) 
-
-    describe('exists', () => {
-        it('should return true when fs.access succeeds', async () => {
-            // Arrange
-            mockExists.mockResolvedValueOnce(undefined)
-
-            // Act
-            const result = await exists('haspath')
-
-            // Assert
-            expect(result).toBe(true)
-            expect(mockExists).toHaveBeenCalledWith('haspath')
-        })
-
-        it('should return false when fs.access fails', async() => {
-            // Arrange
-            const accessError = Object.assign(
-                new Error('ENOENT: no such file or directory'),
-                { code: 'ENOENT'}
-            ) as NodeJS.ErrnoException
-
-            mockExists.mockRejectedValue(accessError)
-
-            // Act 
-            const result = await exists('nopath')
-
-            // Assert
-            expect(result).toBe(false)
-            expect(mockExists).toHaveBeenCalledWith('nopath')
-        })
-
-        it('should return false for permission denied errors', async () => {
-            // Arrange 
-            const permissionError = Object.assign(
-                new Error('EACCESS: permission denied'), 
-                { code: 'EACCES' }
-            ) as NodeJS.ErrnoException 
-
-            mockExists.mockRejectedValue(permissionError)
-
-            // Act
-            const result = await exists('restrictedpath')
-            
-            // Assert
-            expect(result).toBe(false)
-            expect(mockExists).toHaveBeenCalledWith('restrictedpath')
-        })
     })
-
+    
     describe('createTempFile', () => {
         describe('success cases ', () => {
             it('should create a new directory and a file with given content', async () => {
@@ -245,6 +203,76 @@ describe('manageTempFile', () => {
             )
 
             expect(result).toMatch(/__test__\/file-with_special.chars\.json$/)
+        })
+    })
+
+    describe('cleanTempFiles', () => {
+        it('should clean dir and files', async () => {
+            // Arrange
+            mockAccess.mockResolvedValueOnce(undefined)
+                // why this is necessary
+            mockReaddir.mockResolvedValue(['a.json', 'b.json'] as unknown as string[])
+            mockUnlink.mockResolvedValue(undefined) 
+            mockRmdir.mockResolvedValue(undefined)
+
+            // Act
+            await cleanTempFiles()
+
+            // assert
+            expect(mockAccess).toHaveBeenCalledWith(expect.stringContaining('__test__'))
+            expect(mockReaddir).toHaveBeenCalledWith(expect.stringContaining('__test__')) 
+            expect(mockUnlink).toHaveBeenCalledTimes(2)
+            expect(mockUnlink).toHaveBeenCalledWith(expect.stringContaining('a.json'))
+            expect(mockUnlink).toHaveBeenCalledWith(expect.stringContaining('b.json')) 
+            expect(mockRmdir).toHaveBeenCalledWith(expect.stringContaining('__test__'))
+        })
+    })
+
+    describe('exists', () => {
+        it('should return true when fs.access succeeds', async () => {
+            // Arrange
+            mockAccess.mockResolvedValueOnce(undefined)
+
+            // Act
+            const result = await exists('haspath')
+
+            // Assert
+            expect(result).toBe(true)
+            expect(mockAccess).toHaveBeenCalledWith('haspath')
+        })
+
+        it('should return false when fs.access fails', async() => {
+            // Arrange
+            const accessError = Object.assign(
+                new Error('ENOENT: no such file or directory'),
+                { code: 'ENOENT'}
+            ) as NodeJS.ErrnoException
+
+            mockAccess.mockRejectedValueOnce(accessError)
+
+            // Act 
+            const result = await exists('nopath')
+
+            // Assert
+            expect(result).toBe(false)
+            expect(mockAccess).toHaveBeenCalledWith('nopath')
+        })
+
+        it('should return false for permission denied errors', async () => {
+            // Arrange 
+            const permissionError = Object.assign(
+                new Error('EACCESS: permission denied'), 
+                { code: 'EACCES' }
+            ) as NodeJS.ErrnoException 
+
+            mockAccess.mockRejectedValue(permissionError)
+
+            // Act
+            const result = await exists('restrictedpath')
+            
+            // Assert
+            expect(result).toBe(false)
+            expect(mockAccess).toHaveBeenCalledWith('restrictedpath')
         })
     })
 }) 
