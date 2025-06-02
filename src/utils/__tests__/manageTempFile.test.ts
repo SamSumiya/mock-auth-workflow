@@ -74,7 +74,7 @@ describe('createTempFile', () => {
     })
 
     describe('error cases' , () => {
-        it('should reject when the file name already exists', async() => {
+        it('should reject when the file name already exists - EEXIST', async() => {
             // Arrange
             const eexistError = Object.assign(
                 new Error('EEXIST: Directory already exists'), 
@@ -91,8 +91,11 @@ describe('createTempFile', () => {
 
             // Asssert 
             await expect(promise).rejects.toThrow('EEXIST')
-            await expect(promise).rejects.toMatchObject({ code: 'EEXIST'})
-            await expect(mockWriteFile).not.toHaveBeenCalled()
+            await expect(promise).rejects.toMatchObject({ 
+                code: 'EEXIST',
+                message: 'EEXIST: Directory already exists'
+            })
+            expect(mockWriteFile).not.toHaveBeenCalled()
         })
 
         it ('should throw an ENOENT error when a parent directory does not exist', async () => {
