@@ -48,4 +48,25 @@ describe('hasUser', () => {
         expect(mockReadUserFile).toHaveBeenCalledTimes(1)
     })
 
+    it('should return false when user can not be found in users file', async() => {
+        // Arrange
+        const mockUserData: Record<string, User> = {
+           'nonexistsuser@email.com': {
+                userId: 'unknow',
+                firstname: 'Test',
+                lastname: 'nonexistant',
+                email: 'nonexistant@email.com',
+                password: 'secret2'
+            }
+        }
+        mockReadUserFile.mockRejectedValue(mockUserData)
+
+        // Act 
+        const result = await hasUser('abc@email.com')
+
+        // Assert 
+        expect(mockReadUserFile).toHaveBeenCalledTimes(1);
+        expect(result).toBe(false)
+    })
+
 })
