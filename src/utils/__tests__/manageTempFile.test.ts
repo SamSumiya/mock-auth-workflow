@@ -39,9 +39,9 @@ describe('manageTempFile', () => {
             // Arrange
             const accessError = Object.assign(
                 new Error('ENOENT: no such file or directory'),
-                { error: 'ENOENT'}
+                { code: 'ENOENT'}
             ) as NodeJS.ErrnoException
-            
+
             mockExists.mockRejectedValue(accessError)
 
             // Act 
@@ -50,6 +50,23 @@ describe('manageTempFile', () => {
             // Assert
             expect(result).toBe(false)
             expect(mockExists).toHaveBeenCalledWith('nopath')
+        })
+
+        it('should return false for permission denied errors', async () => {
+            // Arrange 
+            const permissionError = Object.assign(
+                new Error('EACCESS: permission denied'), 
+                { code: 'EACCES' }
+            ) as NodeJS.ErrnoException 
+
+            mockExists.mockRejectedValue(permissionError)
+
+            // Act
+            const result = await exists('restrictedpath')
+            
+            // Assert
+            expect(result).toBe(false)
+            expect(mockExists).toHaveBeenCalledWith('restrictedpath')
         })
     })
 
