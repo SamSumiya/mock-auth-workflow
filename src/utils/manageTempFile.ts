@@ -25,7 +25,7 @@ export async function cleanTempFiles(): Promise<void> {
     await fs.rmdir(TEMP_DIR)
 }
 
-async function exists(p: string): Promise<boolean> {
+export async function exists(p: string): Promise<boolean> {
     try {
         await fs.access(p)
         return true
