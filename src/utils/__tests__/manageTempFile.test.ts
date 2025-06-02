@@ -10,6 +10,7 @@ jest.mock('crypto', () => ({
 import fs from 'fs/promises'
 import crypto from 'crypto'
 import { createTempFile, cleanTempFiles } from "../manageTempFile"
+import { mkdir } from 'fs'
 
 const mockMkdir = fs.mkdir as jest.MockedFunction<typeof fs.mkdir>;
 const mockWriteFile = fs.writeFile as jest.MockedFunction<typeof fs.writeFile>;
@@ -95,10 +96,11 @@ describe('createTempFile', () => {
                 code: 'EEXIST',
                 message: 'EEXIST: Directory already exists'
             })
+        
             expect(mockWriteFile).not.toHaveBeenCalled()
         })
 
-        it ('should throw an ENOENT error when a parent directory does not exist', async () => {
+        it ('should throw an ENOENT error when a parent directory does not exist - ENOENT', async () => {
             // Arrange 
             const enoentError = Object.assign(
                 new Error('ENOENT: No Dir nor no file'), 
@@ -116,9 +118,11 @@ describe('createTempFile', () => {
                 message: expect.stringContaining('ENOENT'),
                 code: 'ENOENT'
             });
+
+            expect(mockWriteFile).not.toHaveBeenCalled()
         })
 
-        it ('should throw an EACCES error when there is a permission issue', async () => {
+        it ('should throw an EACCES error when there is a permission issue - EACCES', async () => {
             // Arrange 
             const eaccesError = Object.assign(
                 new Error('EACCES: no permission'), 
@@ -136,6 +140,42 @@ describe('createTempFile', () => {
                 message: expect.stringContaining('EACCES: no permission'), 
                 code: 'EACCES'
             })
+
+            expect(mockWriteFile).not.toHaveBeenCalled()
+        })
+
+        it ('should reject when writeFile fails', async ( ) => {
+            // Arrange
+            const writeError = new Error('failed to write to file')
+            mockMkdir.mockResolvedValue(undefined)
+            mockWriteFile.mockRejectedValue(writeError)
+
+            // Act 
+            const promise = createTempFile('writeFile fails')
+
+            // Assert
+            await expect(promise).rejects.toThrow('failed to write to file')
+            expect(mockMkdir).toHaveBeenCalledTimes(1)
+            expect(mockWriteFile).toHaveBeenCalledTimes(1);
+        })
+    })
+
+    describe('edge cases', () => {
+        it('should handle empty content', async () => {
+            // Arrange 
+            mockMkdir.mockResolvedValue(undefined)
+            mockWriteFile.mockResolvedValue(undefined)
+
+            // Act
+            const result = await createTempFile('', 'empty.json')
+
+            // Assert
+            expect(mockWriteFile).toHaveBeenCalledWith(
+                expect.stringContaining('empty.json'),
+                '',
+                'utf-8'
+            )
+            expect(result).toMatch(/__test__\/empty\.json$/)
         })
     })
 })
