@@ -211,7 +211,7 @@ describe('manageTempFile', () => {
             // Arrange
             mockAccess.mockResolvedValueOnce(undefined)
                 // why this is necessary
-            mockReaddir.mockResolvedValue(['a.json', 'b.json'] as unknown as string[])
+            mockReaddir.mockResolvedValue(['a.json', 'b.json'])
             mockUnlink.mockResolvedValue(undefined) 
             mockRmdir.mockResolvedValue(undefined)
 
@@ -226,6 +226,29 @@ describe('manageTempFile', () => {
             expect(mockUnlink).toHaveBeenCalledWith(expect.stringContaining('b.json')) 
             expect(mockRmdir).toHaveBeenCalledWith(expect.stringContaining('__test__'))
         })
+
+        it('should throw when directory does not exist', async () => {
+            // Arrange 
+            const enoentError = Object.assign(
+                new Error('ENOENT: no such file or folder'), 
+                { code: 'ENOENT'}
+            ) as NodeJS.ErrnoException
+
+            mockAccess.mockRejectedValueOnce(enoentError)
+            mockUnlink.mockClear()
+            mockRmdir.mockClear() 
+
+            // Act
+            const result = await cleanTempFiles()
+            
+            // Assert 
+            expect(result).toBeUndefined()
+            expect(mockAccess).toHaveBeenCalledWith(expect.stringContaining('__test__'))
+            expect(mockUnlink).not.toHaveBeenCalled()
+            expect(mockRmdir).not.toHaveBeenCalled()
+        })
+
+
     })
 
     describe('exists', () => {
